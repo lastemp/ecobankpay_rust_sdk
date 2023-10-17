@@ -1,6 +1,6 @@
 # ecobankpay_rust_sdk
 
-This is an sdk that will be used by developers to seamlessly integrate with KCB Buni APIs' Gateway.
+This is an sdk that will be used by developers to seamlessly integrate with EcobankPay APIs' Gateway.
 Ecobank is a pan-African banking conglomerate, with banking operations in 33 African countries. It is the leading independent regional banking group in West Africa and Central Africa.
 The API endpoints provided by EcobankPay Gateway includes; QR Code Payments, Card Payments, Payments and Account Services (https://developer.ecobank.com/app/index.xhtml). 
 
