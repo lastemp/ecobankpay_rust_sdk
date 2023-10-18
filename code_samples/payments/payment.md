@@ -1,6 +1,6 @@
 # payment
 
-This API enables partners to transfer money from their account to various beneficiaries through divers methods.
+This API enables partners to transfer money from their account to various beneficiaries through diverse methods.
 
 ## main.rs
 
