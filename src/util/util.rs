@@ -8,7 +8,8 @@ use crate::models::account_services::{
 };
 
 use crate::models::payments::payment::{
-    DomesticPaymentRequestDetails, MixedTypeValue, PaymentData, PaymentDataInputDetails,
+    BillPaymentPaymentRequestDetails, DomesticPaymentRequestDetails,
+    InterBankPaymentRequestDetails, MixedTypeValue, PaymentData, PaymentDataInputDetails,
     PaymentHeaderData, PaymentRequestData, RequestParameter, TokenPaymentRequestDetails,
 };
 
@@ -78,17 +79,36 @@ pub fn build_payment_data(payment_details: &PaymentDataInputDetails) -> PaymentD
     let extension_domestic: &Vec<DomesticPaymentRequestDetails> =
         payment_details.get_extension_domestic();
     let extension_token: &Vec<TokenPaymentRequestDetails> = payment_details.get_extension_token();
+    let extension_interbank: &Vec<InterBankPaymentRequestDetails> =
+        payment_details.get_extension_interbank();
+    let extension_billpayment: &Vec<BillPaymentPaymentRequestDetails> =
+        payment_details.get_extension_billpayment();
+
     let x1 = if !extension_domestic.is_empty() {
         extension_domestic.len()
     } else {
         0
     };
+
     let x2 = if !extension_token.is_empty() {
         extension_token.len()
     } else {
         0
     };
-    let transaction_count: u16 = x1 as u16 + x2 as u16;
+
+    let x3 = if !extension_interbank.is_empty() {
+        extension_interbank.len()
+    } else {
+        0
+    };
+
+    let x4 = if !extension_billpayment.is_empty() {
+        extension_billpayment.len()
+    } else {
+        0
+    };
+
+    let transaction_count: u16 = x1 as u16 + x2 as u16 + x3 as u16 + x4 as u16;
     let batch_count = transaction_count;
 
     let payment_header = payment_details.get_payment_header();
@@ -274,7 +294,153 @@ pub fn build_payment_data(payment_details: &PaymentDataInputDetails) -> PaymentD
         my_extension.push(my_param_request);
     }
 
-    let secure_hash = payment_details.get_secure_hash(); //payment_details.payment_header.get_secure_hash();
+    // "interbank"
+    for param_request in extension_interbank {
+        let mut my_param_list: Vec<RequestParameter> = Vec::new();
+
+        let param_list_token = param_request.get_param_list_interbank();
+
+        for param_list in param_list_token {
+            let destination_bank_code = RequestParameter {
+                Key: String::from("destinationBankCode"),
+                Value: MixedTypeValue::StringValue(param_list.get_destination_bank_code()),
+            };
+
+            let sender_name = RequestParameter {
+                Key: String::from("senderName"),
+                Value: MixedTypeValue::StringValue(param_list.get_sender_name()),
+            };
+
+            let sender_address = RequestParameter {
+                Key: String::from("senderAddress"),
+                Value: MixedTypeValue::StringValue(param_list.get_sender_address()),
+            };
+
+            let sender_phone = RequestParameter {
+                Key: String::from("senderPhone"),
+                Value: MixedTypeValue::StringValue(param_list.get_sender_phone()),
+            };
+
+            let beneficiary_account_no = RequestParameter {
+                Key: String::from("beneficiaryAccountNo"),
+                Value: MixedTypeValue::StringValue(param_list.get_beneficiary_account_no()),
+            };
+
+            let beneficiary_name = RequestParameter {
+                Key: String::from("beneficiaryName"),
+                Value: MixedTypeValue::StringValue(param_list.get_beneficiary_name()),
+            };
+
+            let beneficiary_phone = RequestParameter {
+                Key: String::from("beneficiaryPhone"),
+                Value: MixedTypeValue::StringValue(param_list.get_beneficiary_phone()),
+            };
+
+            let transfer_reference_no = RequestParameter {
+                Key: String::from("transferReferenceNo"),
+                Value: MixedTypeValue::StringValue(param_list.get_transfer_reference_no()),
+            };
+
+            let _amount = RequestParameter {
+                Key: String::from("amount"),
+                Value: MixedTypeValue::FloatValue(param_list.get_amount()),
+            };
+
+            let _ccy = RequestParameter {
+                Key: String::from("ccy"),
+                Value: MixedTypeValue::StringValue(param_list.get_ccy()),
+            };
+
+            let transfer_type = RequestParameter {
+                Key: String::from("transferType"),
+                Value: MixedTypeValue::StringValue(param_list.get_transfer_type()),
+            };
+
+            my_param_list.push(destination_bank_code);
+            my_param_list.push(sender_name);
+            my_param_list.push(sender_address);
+            my_param_list.push(sender_phone);
+            my_param_list.push(beneficiary_account_no);
+            my_param_list.push(beneficiary_name);
+            my_param_list.push(beneficiary_phone);
+            my_param_list.push(transfer_reference_no);
+            my_param_list.push(_amount);
+            my_param_list.push(_ccy);
+            my_param_list.push(transfer_type);
+        }
+
+        let my_param_request = PaymentRequestData {
+            request_id: param_request.get_request_id(),
+            request_type: String::from("INTERBANK"),
+            param_list: my_param_list,
+            amount: param_request.get_amount(),
+            currency: param_request.get_currency(),
+            status: param_request.get_status(),
+            rate_type: param_request.get_rate_type(),
+        };
+
+        my_extension.push(my_param_request);
+    }
+
+    // "BILLPAYMENT"
+    for param_request in extension_billpayment {
+        let mut my_param_list: Vec<RequestParameter> = Vec::new();
+
+        let param_list_token = param_request.get_param_list_billpayment();
+
+        for param_list in param_list_token {
+            let biller_code = RequestParameter {
+                Key: String::from("billerCode"),
+                Value: MixedTypeValue::StringValue(param_list.get_biller_code()),
+            };
+
+            let bill_ref_no = RequestParameter {
+                Key: String::from("billRefNo"),
+                Value: MixedTypeValue::StringValue(param_list.get_bill_ref_no()),
+            };
+
+            let cba_ref_no = RequestParameter {
+                Key: String::from("cbaRefNo"),
+                Value: MixedTypeValue::StringValue(param_list.get_cba_ref_no()),
+            };
+
+            let customer_name = RequestParameter {
+                Key: String::from("customerName"),
+                Value: MixedTypeValue::StringValue(param_list.get_customer_name()),
+            };
+
+            let customer_ref_no = RequestParameter {
+                Key: String::from("customerRefNo"),
+                Value: MixedTypeValue::StringValue(param_list.get_customer_ref_no()),
+            };
+
+            let product_code = RequestParameter {
+                Key: String::from("productCode"),
+                Value: MixedTypeValue::StringValue(param_list.get_product_code()),
+            };
+
+            my_param_list.push(biller_code);
+            my_param_list.push(bill_ref_no);
+            my_param_list.push(cba_ref_no);
+            my_param_list.push(customer_name);
+            my_param_list.push(customer_ref_no);
+            my_param_list.push(product_code);
+        }
+
+        let my_param_request = PaymentRequestData {
+            request_id: param_request.get_request_id(),
+            request_type: String::from("BILLPAYMENT"),
+            param_list: my_param_list,
+            amount: param_request.get_amount(),
+            currency: param_request.get_currency(),
+            status: param_request.get_status(),
+            rate_type: param_request.get_rate_type(),
+        };
+
+        my_extension.push(my_param_request);
+    }
+
+    let secure_hash = payment_details.get_secure_hash();
 
     PaymentData {
         paymentHeader: my_payment_header,

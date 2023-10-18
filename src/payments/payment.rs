@@ -2,7 +2,7 @@ use reqwest::StatusCode;
 
 use crate::{
     models::payments::payment::{PaymentDataInputDetails, PaymentResponseData},
-    util::util::{build_account_statement_data, build_headers, build_payment_data},
+    util::util::{build_headers, build_payment_data},
 };
 
 pub async fn payment(

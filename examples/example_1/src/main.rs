@@ -4,6 +4,10 @@ pub mod account_services {
     pub mod account_statement;
 }
 
+pub mod payments {
+    pub mod payment;
+}
+
 // SANDBOX
 const CONSUMER_KEY_SANDBOX: &str = "***";
 const CONSUMER_SECRET_SANDBOX: &str = "***";
@@ -37,6 +41,10 @@ async fn main() {
         consumer_secret,
         _env,
     );
+
+
+    // payment
+    let x = payments::payment::test_payment(consumer_key, consumer_secret, _env);
     */
 
     x.await;

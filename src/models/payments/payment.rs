@@ -692,11 +692,414 @@ impl TokenPaymentRequestDetails {
     }
 }
 
+#[allow(non_snake_case)]
+#[derive(Debug)]
+pub struct InterBankParameterDetails {
+    destination_bank_code: String,
+    sender_name: String,
+    sender_address: String,
+    sender_phone: String,
+    beneficiary_account_no: String,
+    beneficiary_name: String,
+    beneficiary_phone: String,
+    transfer_reference_no: String,
+    _amount: f32,
+    _ccy: String,
+    transfer_type: String,
+}
+
+impl InterBankParameterDetails {
+    pub fn new(
+        destination_bank_code: String,
+        sender_name: String,
+        sender_address: String,
+        sender_phone: String,
+        beneficiary_account_no: String,
+        beneficiary_name: String,
+        beneficiary_phone: String,
+        transfer_reference_no: String,
+        _amount: f32,
+        _ccy: String,
+        transfer_type: String,
+    ) -> Result<Self, String> {
+        if _amount > 0.0 {
+            // _amount is valid
+        } else {
+            return Err(String::from("amount has invalid value"));
+        }
+
+        if _ccy.is_empty() || _ccy.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("ccy is empty"));
+        }
+        // _ccy has a length of 3 characters
+        else if _ccy.len() == 3 {
+            // _ccy is valid
+        } else {
+            return Err(String::from("ccy has invalid length"));
+        }
+
+        Ok(Self {
+            destination_bank_code,
+            sender_name,
+            sender_address,
+            sender_phone,
+            beneficiary_account_no,
+            beneficiary_name,
+            beneficiary_phone,
+            transfer_reference_no,
+            _amount,
+            _ccy,
+            transfer_type,
+        })
+    }
+
+    pub fn get_destination_bank_code(&self) -> String {
+        let destination_bank_code = &self.destination_bank_code;
+        destination_bank_code.to_string()
+    }
+
+    pub fn get_sender_name(&self) -> String {
+        let sender_name = &self.sender_name;
+        sender_name.to_string()
+    }
+
+    pub fn get_sender_address(&self) -> String {
+        let sender_address = &self.sender_address;
+        sender_address.to_string()
+    }
+    pub fn get_sender_phone(&self) -> String {
+        let sender_phone = &self.sender_phone;
+        sender_phone.to_string()
+    }
+    pub fn get_beneficiary_account_no(&self) -> String {
+        let beneficiary_account_no = &self.beneficiary_account_no;
+        beneficiary_account_no.to_string()
+    }
+    pub fn get_beneficiary_name(&self) -> String {
+        let beneficiary_name = &self.beneficiary_name;
+        beneficiary_name.to_string()
+    }
+    pub fn get_beneficiary_phone(&self) -> String {
+        let beneficiary_phone = &self.beneficiary_phone;
+        beneficiary_phone.to_string()
+    }
+    pub fn get_transfer_reference_no(&self) -> String {
+        let transfer_reference_no = &self.transfer_reference_no;
+        transfer_reference_no.to_string()
+    }
+
+    pub fn get_amount(&self) -> f32 {
+        let _amount = &self._amount;
+        *_amount
+    }
+
+    pub fn get_ccy(&self) -> String {
+        let _ccy = &self._ccy;
+        _ccy.to_string()
+    }
+
+    pub fn get_transfer_type(&self) -> String {
+        let transfer_type = &self.transfer_type;
+        transfer_type.to_string()
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug)]
+pub struct InterBankPaymentRequestDetails {
+    request_id: String,
+    param_list_interbank: Vec<InterBankParameterDetails>,
+    _amount: f32,
+    _currency: String,
+    _status: String,
+    rate_type: String,
+}
+
+impl InterBankPaymentRequestDetails {
+    pub fn new(
+        request_id: String,
+        param_list_interbank: Vec<InterBankParameterDetails>,
+        _amount: f32,
+        _currency: String,
+        _status: String, // optional
+        rate_type: String,
+    ) -> Result<Self, String> {
+        if request_id.is_empty() || request_id.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("request id is empty"));
+        }
+        // request_id has a length of 15 characters
+        else if request_id.len() == 15 {
+            // request_id is valid
+        } else {
+            return Err(String::from("request id has invalid length"));
+        }
+
+        if param_list_interbank.is_empty() {
+            return Err(String::from("param list interbank is empty"));
+        }
+        // param_list_interbank has a min length of 1 item
+        else if param_list_interbank.len() > 0 {
+            // param_list_interbank is valid
+        } else {
+            return Err(String::from("param list interbank has invalid length"));
+        }
+
+        if _amount > 0.0 {
+            // _amount is valid
+        } else {
+            return Err(String::from("amount has invalid value"));
+        }
+
+        if _currency.is_empty() || _currency.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("currency is empty"));
+        }
+        // _currency has a length of 3 characters
+        else if _currency.len() == 3 {
+            // _currency is valid
+        } else {
+            return Err(String::from("currency has invalid length"));
+        }
+
+        if _status.is_empty() || _status.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("status is empty"));
+        }
+        // _status has a value of NEW
+        else if _status.eq_ignore_ascii_case(&String::from("new")) {
+            // _status is valid
+        } else {
+            return Err(String::from("status has invalid value"));
+        }
+
+        if rate_type.is_empty() || rate_type.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("rate type is empty"));
+        }
+        // rate_type has a value of Spot
+        else if rate_type.eq_ignore_ascii_case(&String::from("spot ")) {
+            // rate_type is valid
+        } else {
+            return Err(String::from("rate type has invalid value"));
+        }
+
+        Ok(Self {
+            request_id,
+            param_list_interbank,
+            _amount,
+            _currency,
+            _status,
+            rate_type,
+        })
+    }
+
+    pub fn get_request_id(&self) -> String {
+        let request_id = &self.request_id;
+        request_id.to_string()
+    }
+
+    pub fn get_param_list_interbank(&self) -> &Vec<InterBankParameterDetails> {
+        let param_list_interbank = &self.param_list_interbank;
+        param_list_interbank
+    }
+
+    pub fn get_amount(&self) -> f32 {
+        let _amount = &self._amount;
+        *_amount
+    }
+    pub fn get_currency(&self) -> String {
+        let _currency = &self._currency;
+        _currency.to_string()
+    }
+    pub fn get_status(&self) -> String {
+        let _status = &self._status;
+        _status.to_string()
+    }
+
+    pub fn get_rate_type(&self) -> String {
+        let rate_type = &self.rate_type;
+        rate_type.to_string()
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug)]
+pub struct BillPaymentParameterDetails {
+    biller_code: String,
+    bill_ref_no: String,
+    cba_ref_no: String,
+    customer_name: String,
+    customer_ref_no: String,
+    product_code: String,
+}
+
+impl BillPaymentParameterDetails {
+    pub fn new(
+        biller_code: String,
+        bill_ref_no: String,
+        cba_ref_no: String,
+        customer_name: String,
+        customer_ref_no: String,
+        product_code: String,
+    ) -> Result<Self, String> {
+        Ok(Self {
+            biller_code,
+            bill_ref_no,
+            cba_ref_no,
+            customer_name,
+            customer_ref_no,
+            product_code,
+        })
+    }
+
+    pub fn get_biller_code(&self) -> String {
+        let biller_code = &self.biller_code;
+        biller_code.to_string()
+    }
+
+    pub fn get_bill_ref_no(&self) -> String {
+        let bill_ref_no = &self.bill_ref_no;
+        bill_ref_no.to_string()
+    }
+
+    pub fn get_cba_ref_no(&self) -> String {
+        let cba_ref_no = &self.cba_ref_no;
+        cba_ref_no.to_string()
+    }
+    pub fn get_customer_name(&self) -> String {
+        let customer_name = &self.customer_name;
+        customer_name.to_string()
+    }
+    pub fn get_customer_ref_no(&self) -> String {
+        let customer_ref_no = &self.customer_ref_no;
+        customer_ref_no.to_string()
+    }
+    pub fn get_product_code(&self) -> String {
+        let product_code = &self.product_code;
+        product_code.to_string()
+    }
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug)]
+pub struct BillPaymentPaymentRequestDetails {
+    request_id: String,
+    param_list_billpayment: Vec<BillPaymentParameterDetails>,
+    _amount: f32,
+    _currency: String,
+    _status: String,
+    rate_type: String,
+}
+
+impl BillPaymentPaymentRequestDetails {
+    pub fn new(
+        request_id: String,
+        param_list_billpayment: Vec<BillPaymentParameterDetails>,
+        _amount: f32,
+        _currency: String,
+        _status: String, // optional
+        rate_type: String,
+    ) -> Result<Self, String> {
+        if request_id.is_empty() || request_id.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("request id is empty"));
+        }
+        // request_id has a length of 15 characters
+        else if request_id.len() == 15 {
+            // request_id is valid
+        } else {
+            return Err(String::from("request id has invalid length"));
+        }
+
+        if param_list_billpayment.is_empty() {
+            return Err(String::from("param list billpayment is empty"));
+        }
+        // param_list_billpayment has a min length of 1 item
+        else if param_list_billpayment.len() > 0 {
+            // param_list_billpayment is valid
+        } else {
+            return Err(String::from("param list billpayment has invalid length"));
+        }
+
+        if _amount > 0.0 {
+            // _amount is valid
+        } else {
+            return Err(String::from("amount has invalid value"));
+        }
+
+        if _currency.is_empty() || _currency.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("currency is empty"));
+        }
+        // _currency has a length of 3 characters
+        else if _currency.len() == 3 {
+            // _currency is valid
+        } else {
+            return Err(String::from("currency has invalid length"));
+        }
+
+        if _status.is_empty() || _status.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("status is empty"));
+        }
+        // _status has a value of NEW
+        else if _status.eq_ignore_ascii_case(&String::from("new")) {
+            // _status is valid
+        } else {
+            return Err(String::from("status has invalid value"));
+        }
+
+        if rate_type.is_empty() || rate_type.replace(" ", "").trim().len() == 0 {
+            return Err(String::from("rate type is empty"));
+        }
+        // rate_type has a value of Spot
+        else if rate_type.eq_ignore_ascii_case(&String::from("spot ")) {
+            // rate_type is valid
+        } else {
+            return Err(String::from("rate type has invalid value"));
+        }
+
+        Ok(Self {
+            request_id,
+            param_list_billpayment,
+            _amount,
+            _currency,
+            _status,
+            rate_type,
+        })
+    }
+
+    pub fn get_request_id(&self) -> String {
+        let request_id = &self.request_id;
+        request_id.to_string()
+    }
+
+    pub fn get_param_list_billpayment(&self) -> &Vec<BillPaymentParameterDetails> {
+        let param_list_billpayment: &Vec<BillPaymentParameterDetails> =
+            &self.param_list_billpayment;
+        param_list_billpayment
+    }
+
+    pub fn get_amount(&self) -> f32 {
+        let _amount = &self._amount;
+        *_amount
+    }
+    pub fn get_currency(&self) -> String {
+        let _currency = &self._currency;
+        _currency.to_string()
+    }
+    pub fn get_status(&self) -> String {
+        let _status = &self._status;
+        _status.to_string()
+    }
+
+    pub fn get_rate_type(&self) -> String {
+        let rate_type = &self.rate_type;
+        rate_type.to_string()
+    }
+}
+
 #[derive(Debug)]
 pub struct PaymentDataInputDetails {
     payment_header: PaymentHeaderDetails,
     extension_domestic: Vec<DomesticPaymentRequestDetails>,
     extension_token: Vec<TokenPaymentRequestDetails>,
+    extension_interbank: Vec<InterBankPaymentRequestDetails>,
+    extension_billpayment: Vec<BillPaymentPaymentRequestDetails>,
     secure_hash: String,
 }
 
@@ -705,27 +1108,75 @@ impl PaymentDataInputDetails {
         payment_header: PaymentHeaderDetails,
         extension_domestic: Vec<DomesticPaymentRequestDetails>,
         extension_token: Vec<TokenPaymentRequestDetails>,
+        extension_interbank: Vec<InterBankPaymentRequestDetails>,
+        extension_billpayment: Vec<BillPaymentPaymentRequestDetails>,
         secure_hash: String,
     ) -> Result<Self, String> {
-        if extension_domestic.is_empty() {
-            return Err(String::from("extension is empty"));
-        }
-        // _extension has a min length of 1 item
-        else if extension_domestic.len() > 0 {
-            // _extension is valid
-        } else {
-            return Err(String::from("extension has invalid length"));
-        }
+        let is_valid_domestic = {
+            if extension_domestic.is_empty() {
+                //return Err(String::from("extension is empty"));
+                false
+            }
+            // _extension has a min length of 1 item
+            else if extension_domestic.len() > 0 {
+                // _extension is valid
+                true
+            } else {
+                //return Err(String::from("extension has invalid length"));
+                false
+            }
+        };
 
-        if extension_token.is_empty() {
-            return Err(String::from("extension token is empty"));
-        }
-        // extension_token has a min length of 1 item
-        else if extension_token.len() > 0 {
-            // extension_token is valid
-        } else {
-            return Err(String::from("extension token has invalid length"));
-        }
+        let is_valid_token = {
+            if extension_token.is_empty() {
+                //return Err(String::from("extension token is empty"));
+                false
+            }
+            // extension_token has a min length of 1 item
+            else if extension_token.len() > 0 {
+                // extension_token is valid
+                true
+            } else {
+                //return Err(String::from("extension token has invalid length"));
+                false
+            }
+        };
+
+        let is_valid_interbank = {
+            if extension_interbank.is_empty() {
+                //return Err(String::from("extension interbank is empty"));
+                false
+            }
+            // extension_interbank has a min length of 1 item
+            else if extension_interbank.len() > 0 {
+                // extension_interbank is valid
+                true
+            } else {
+                //return Err(String::from("extension interbank has invalid length"));
+                false
+            }
+        };
+
+        let is_valid_billpayment = {
+            if extension_billpayment.is_empty() {
+                //return Err(String::from("extension billpayment is empty"));
+                false
+            }
+            // extension_billpayment has a min length of 1 item
+            else if extension_billpayment.len() > 0 {
+                // extension_billpayment is valid
+                true
+            } else {
+                //return Err(String::from("extension billpayment has invalid length"));
+                false
+            }
+        };
+
+        if !is_valid_domestic || !is_valid_token || !is_valid_interbank || !is_valid_billpayment {
+            return Err(String::from(
+                "Either of extension domestic or token or interbank billpayment is empty",
+            ));
+        };
 
         if secure_hash.is_empty() || secure_hash.replace(" ", "").trim().len() == 0 {
             return Err(String::from("secure hash is empty"));
@@ -741,6 +1192,8 @@ impl PaymentDataInputDetails {
             payment_header,
             extension_domestic,
             extension_token,
+            extension_interbank,
+            extension_billpayment,
             secure_hash,
         })
     }
@@ -758,6 +1211,17 @@ impl PaymentDataInputDetails {
     pub fn get_extension_token(&self) -> &Vec<TokenPaymentRequestDetails> {
         let extension_token = &self.extension_token;
         extension_token
+    }
+
+    pub fn get_extension_interbank(&self) -> &Vec<InterBankPaymentRequestDetails> {
+        let extension_interbank = &self.extension_interbank;
+        extension_interbank
+    }
+
+    pub fn get_extension_billpayment(&self) -> &Vec<BillPaymentPaymentRequestDetails> {
+        let extension_billpayment: &Vec<BillPaymentPaymentRequestDetails> =
+            &self.extension_billpayment;
+        extension_billpayment
     }
 
     pub fn get_secure_hash(&self) -> String {
