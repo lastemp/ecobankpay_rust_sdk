@@ -32,7 +32,7 @@ async fn main() {
     );
 
     // account_statement
-    let x = account_services::account_statement::test_enquire_account_inquiry(
+    let x = account_services::account_statement::test_enquire_account_statement(
         consumer_key,
         consumer_secret,
         _env,
