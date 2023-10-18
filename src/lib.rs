@@ -42,9 +42,7 @@ use models::account_services::{
     account_statement::{AccountStatementDataInputDetails, AccountStatementResponseData},
 };
 
-use models::payments::{
-    payment::{PaymentDataInputDetails, PaymentResponseData},
-};
+use models::payments::payment::{PaymentDataInputDetails, PaymentResponseData};
 
 const AUTHORISATION_BEARER: &str = "Bearer";
 const GRANT_TYPE: &str = "client_credentials";
@@ -52,14 +50,20 @@ const GRANT_TYPE: &str = "client_credentials";
 const AUTH_TOKEN_URL_SANDBOX: &str = "https://";
 const AUTH_TOKEN_URL_PROD: &str = "https://";
 
-const ACCOUNT_BALANCE_URL_SANDBOX: &str = "https://developer.ecobank.com/corporateapi/merchant/accountbalance";
-const ACCOUNT_BALANCE_URL_PROD: &str = "https://developer.ecobank.com/corporateapi/merchant/accountbalance";
+const ACCOUNT_BALANCE_URL_SANDBOX: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/accountbalance";
+const ACCOUNT_BALANCE_URL_PROD: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/accountbalance";
 
-const ACCOUNT_INQUIRY_URL_SANDBOX: &str = "https://developer.ecobank.com/corporateapi/merchant/accountinquiry";
-const ACCOUNT_INQUIRY_URL_PROD: &str = "https://developer.ecobank.com/corporateapi/merchant/accountinquiry";
+const ACCOUNT_INQUIRY_URL_SANDBOX: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/accountinquiry";
+const ACCOUNT_INQUIRY_URL_PROD: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/accountinquiry";
 
-const ACCOUNT_STATEMENT_URL_SANDBOX: &str = "https://developer.ecobank.com/corporateapi/merchant/statement";
-const ACCOUNT_STATEMENT_URL_PROD: &str = "https://developer.ecobank.com/corporateapi/merchant/statement";
+const ACCOUNT_STATEMENT_URL_SANDBOX: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/statement";
+const ACCOUNT_STATEMENT_URL_PROD: &str =
+    "https://developer.ecobank.com/corporateapi/merchant/statement";
 
 const PAYMENT_URL_SANDBOX: &str = "https://developer.ecobank.com/corporateapi/merchant/payment";
 const PAYMENT_URL_PROD: &str = "https://developer.ecobank.com/corporateapi/merchant/payment";
@@ -208,7 +212,7 @@ impl EcobankPayGateway {
                 // Handle success case
                 let access_token: String = self.parse_auth_token(access_token_result);
                 let api_url = &self.account_balance_url;
-                
+
                 let _result = account_services::account_balance::enquire(
                     account_details,
                     access_token,
@@ -238,7 +242,7 @@ impl EcobankPayGateway {
                 // Handle success case
                 let access_token: String = self.parse_auth_token(access_token_result);
                 let api_url = &self.account_inquiry_url;
-                
+
                 let _result = account_services::account_inquiry::enquire(
                     account_details,
                     access_token,
@@ -268,7 +272,7 @@ impl EcobankPayGateway {
                 // Handle success case
                 let access_token: String = self.parse_auth_token(access_token_result);
                 let api_url = &self.account_statement_url;
-                
+
                 let _result = account_services::account_statement::enquire(
                     account_details,
                     access_token,
@@ -298,13 +302,10 @@ impl EcobankPayGateway {
                 // Handle success case
                 let access_token: String = self.parse_auth_token(access_token_result);
                 let api_url = &self.payment_url;
-                
-                let _result = payments::payment::payment(
-                    payment_details,
-                    access_token,
-                    api_url.to_string(),
-                )
-                .await;
+
+                let _result =
+                    payments::payment::payment(payment_details, access_token, api_url.to_string())
+                        .await;
 
                 return _result;
             }
@@ -338,7 +339,7 @@ mod tests {
 
         let _result = EcobankPayGateway::new(consumer_key, consumer_secret, _env);
 
-        if let Ok(scb) = _result {
+        if let Ok(ecobankpay) = _result {
             let request_id = String::from("***");
             let affiliate_code = String::from("***");
             let account_no = String::from("***");
@@ -346,15 +347,17 @@ mod tests {
             let company_name = String::from("***");
             let secure_hash = String::from("***");
 
-            let _result = AccountBalanceDataInputDetails::new(request_id,
+            let _result = AccountBalanceDataInputDetails::new(
+                request_id,
                 affiliate_code,
                 account_no,
                 client_id,
                 company_name,
-                secure_hash,);
+                secure_hash,
+            );
 
             if let Ok(account_details) = _result {
-                let _output = scb.enquire_account_balance(account_details);
+                let _output = ecobankpay.enquire_account_balance(account_details);
                 let _result = _output.await;
                 assert_eq!(_result.is_ok(), true);
             }
